@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickResponse — Online Police Complaint &amp; Dispatch Portal | focp 1003</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-light: #273549;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Mandatory Student Info Banner */
+    .student-banner {
+      background: linear-gradient(90deg, #1d4ed8, #0f172a);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.92rem;
+    }
+
+    .student-banner .course-tag {
+      background: #facc15;
+      color: #0f172a;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: lowercase;
+    }
+
+    .student-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-weight: 600;
+    }
+
+    .student-details span strong {
+      color: #93c5fd;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    /* Role Switcher */
+    .role-switch {
+      display: flex;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .role-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 16px;
+      border-radius: 7px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .role-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1180px;
+      margin: 24px auto;
+      padding: 0 20px 40px;
+    }
+
+    /* Stats Row */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .stat-card .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .stat-pending .value { color: var(--danger); }
+    .stat-responding .value { color: var(--warning); }
+    .stat-solved .value { color: var(--success); }
+
+    /* Workspace Layout */
+    .workspace {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .workspace.police-mode {
+      grid-template-columns: 1fr;
+    }
+
+    @media (max-width: 900px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards & Forms */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #cbd5e1;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 85px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-respond {
+      background: var(--warning);
+      color: #0f172a;
+    }
+
+    .btn-respond:hover { filter: brightness(1.08); }
+
+    .btn-solve {
+      background: var(--success);
+      color: #052e16;
+    }
+
+    .btn-solve:hover { filter: brightness(1.08); }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 6px 10px;
+    }
+
+    .btn-reset:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    /* Filter Bar */
+    .feed-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Complaint Items */
+    .complaint-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .complaint-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--danger);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .complaint-item.status-responding {
+      border-left-color: var(--warning);
+    }
+
+    .complaint-item.status-solved {
+      border-left-color: var(--success);
+    }
+
+    .complaint-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .cmp-id {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #93c5fd;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .badge-pending { background: var(--danger-bg); color: #fca5a5; }
+    .badge-responding { background: var(--warning-bg); color: #fcd34d; }
+    .badge-solved { background: var(--success-bg); color: #6ee7b7; }
+
+    .urgency-high { color: #f87171; font-weight: 700; font-size: 0.8rem; }
+    .urgency-medium { color: #fbbf24; font-weight: 700; font-size: 0.8rem; }
+    .urgency-low { color: #94a3b8; font-weight: 700; font-size: 0.8rem; }
+
+    .complaint-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .complaint-meta {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .complaint-desc {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
+
+    .police-log {
+      background: var(--surface-light);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      margin-top: 8px;
+    }
+
+    .police-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .police-actions input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mandatory Home Page Student Details -->
+  <div class="student-banner">
+    <div class="student-details">
+      <span><strong>Name:</strong> Anzar Mobeen</span>
+      <span><strong>Scholar Number:</strong> 26U020178</span>
+    </div>
+    <div class="course-tag">focp 1003</div>
+  </div>
+
+  <!-- Main Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <h1>QuickResponse — Online Police Complaint &amp; Dispatch Portal</h1>
+        <p>Rapid incident reporting for conflicts, fights, or mishappenings with real-time police response tracking.</p>
+      </div>
+      <div class="role-switch">
+        <button class="role-btn active" id="btnCitizenView" onclick="switchRole('citizen')">Citizen Portal</button>
+        <button class="role-btn" id="btnPoliceView" onclick="switchRole('police')">Police Control Room</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Live Counters -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total Complaints</div>
+        <div class="value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card stat-pending">
+        <div class="label">Pending Response</div>
+        <div class="value" id="statPending">0</div>
+      </div>
+      <div class="stat-card stat-responding">
+        <div class="label">Police Responding</div>
+        <div class="value" id="statResponding">0</div>
+      </div>
+      <div class="stat-card stat-solved">
+        <div class="label">Cases Solved</div>
+        <div class="value" id="statSolved">0</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace -->
+    <section class="workspace" id="workspace">
+      <!-- Complaint Registration Form (Citizen View) -->
+      <div class="card" id="formCard">
+        <h2>Register an Emergency / Complaint</h2>
+        <form id="complaintForm">
+          <div class="form-group">
+            <label for="reporterName">Your Name</label>
+            <input type="text" id="reporterName" placeholder="e.g., Rahul Sharma" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Contact Number</label>
+            <input type="tel" id="phone" placeholder="e.g., 9876543210" required />
+          </div>
+
+          <div class="form-group">
+            <label for="category">Incident Category</label>
+            <select id="category" required>
+              <option value="Conflict / Physical Fight">Conflict / Physical Fight</option>
+              <option value="Road Accident / Mishappening">Road Accident / Mishappening</option>
+              <option value="Theft / Snatching">Theft / Snatching</option>
+              <option value="Public Nuisance / Harassment">Public Nuisance / Harassment</option>
+              <option value="Other Emergency">Other Emergency</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="urgency">Urgency Level</label>
+            <select id="urgency" required>
+              <option value="High">High (Immediate Dispatch Needed)</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Exact Location / Landmark</label>
+            <input type="text" id="location" placeholder="e.g., Main Gate Road, Sector 4" required />
+          </div>
+
+          <div class="form-group">
+            <label for="description">Incident Details</label>
+            <textarea id="description" placeholder="Briefly describe what happened..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit Complaint Immediately</button>
+        </form>
+      </div>
+
+      <!-- Live Complaints Board -->
+      <div class="card">
+        <div class="feed-header">
+          <h2 id="feedTitle" style="border:none; margin:0; padding:0;">Live Complaint Status Board</h2>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="filters">
+              <button class="filter-btn active" onclick="setFilter('All', this)">All</button>
+              <button class="filter-btn" onclick="setFilter('Pending', this)">Pending</button>
+              <button class="filter-btn" onclick="setFilter('Responding', this)">Responding</button>
+              <button class="filter-btn" onclick="setFilter('Solved', this)">Solved</button>
+            </div>
+            <button class="btn btn-reset" onclick="resetDemoData()" title="Restore sample cases">Reset Demo</button>
+          </div>
+        </div>
+
+        <div class="complaint-list" id="complaintList"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'focp1003_police_complaints_v1';
+    let currentRole = 'citizen';
+    let currentFilter = 'All';
+
+    const defaultComplaints = [
+      {
+        id: 'CMP-1001',
+        reporterName: 'Aarav Verma',
+        phone: '98260XXXXX',
+        category: 'Conflict / Physical Fight',
+        urgency: 'High',
+        location: 'Near Central Market Crossing',
+        description: 'Two groups arguing loudly and blocking traffic; situation escalating quickly.',
+        status: 'Pending',
+        createdAt: 'Today, 05:42 PM',
+        policeNote: '',
+        updatedAt: ''
+      },
+      {
+        id: 'CMP-1002',
+        reporterName: 'Sneha Patel',
+        phone: '94250XXXXX',
+        category: 'Road Accident / Mishappening',
+        urgency: 'High',
+        location: 'Link Road Square, Near Bus Stop',
+        description: 'Minor two-wheeler collision; rider needs assistance and traffic clearance.',
+        status: 'Responding',
+        createdAt: 'Today, 05:15 PM',
+        policeNote: 'PCR Van #14 dispatched. Officers reached spot and assisting.',
+        updatedAt: 'Today, 05:21 PM'
+      },
+      {
+        id: 'CMP-1003',
+        reporterName: 'Mohit Tiwari',
+        phone: '91090XXXXX',
+        category: 'Public Nuisance / Harassment',
+        urgency: 'Medium',
+        location: 'Station Road, Block B',
+        description: 'Late-night loud disturbance near residential lane.',
+        status: 'Solved',
+        createdAt: 'Today, 03:30 PM',
+        policeNote: 'Patrol team intervened, dispersed crowd, and resolved the issue peacefully.',
+        updatedAt: 'Today, 04:05 PM'
+      }
+    ];
+
+    function loadComplaints() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultComplaints));
+        return [...defaultComplaints];
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveComplaints(list) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let complaints = loadComplaints();
+
+    function getCurrentTime() {
+      const now = new Date();
+      return 'Today, ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      document.getElementById('btnCitizenView').classList.toggle('active', role === 'citizen');
+      document.getElementById('btnPoliceView').classList.toggle('active', role === 'police');
+
+      const formCard = document.getElementById('formCard');
+      const workspace = document.getElementById('workspace');
+      const feedTitle = document.getElementById('feedTitle');
+
+      if (role === 'police') {
+        formCard.style.display = 'none';
+        workspace.classList.add('police-mode');
+        feedTitle.textContent = 'Police Control Room — Active Dispatch & Resolution Queue';
+      } else {
+        formCard.style.display = 'block';
+        workspace.classList.remove('police-mode');
+        feedTitle.textContent = 'Live Complaint Status Board';
+      }
+
+      renderComplaints();
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderComplaints();
+    }
+
+    document.getElementById('complaintForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const newComplaint = {
+        id: 'CMP-' + Math.floor(1004 + Math.random() * 8995),
+        reporterName: document.getElementById('reporterName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        category: document.getElementById('category').value,
+        urgency: document.getElementById('urgency').value,
+        location: document.getElementById('location').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        status: 'Pending',
+        createdAt: getCurrentTime(),
+        policeNote: '',
+        updatedAt: ''
+      };
+
+      complaints.unshift(newComplaint);
+      saveComplaints(complaints);
+      this.reset();
+      renderComplaints();
+      showToast(`Complaint ${newComplaint.id} registered! Alert sent to Police Control Room.`);
+    });
+
+    function updateStatus(id, newStatus) {
+      const noteInput = document.getElementById(`note-${id}`);
+      const customNote = noteInput ? noteInput.value.trim() : '';
+
+      complaints = complaints.map(cmp => {
+        if (cmp.id === id) {
+          let defaultNote = '';
+          if (newStatus === 'Responding') {
+            defaultNote = 'Nearest PCR patrol unit dispatched immediately to the location.';
+          } else if (newStatus === 'Solved') {
+            defaultNote = 'Police team resolved the incident on site and closed the complaint.';
+          }
+
+          return {
+            ...cmp,
+            status: newStatus,
+            policeNote: customNote || defaultNote,
+            updatedAt: getCurrentTime()
+          };
+        }
+        return cmp;
+      });
+
+      saveComplaints(complaints);
+      renderComplaints();
+      showToast(`Complaint ${id} updated to "${newStatus}".`);
+    }
+
+    function resetDemoData() {
+      localStorage.removeItem(STORAGE_KEY);
+      complaints = loadComplaints();
+      renderComplaints();
+      showToast('Demo data restored.');
+    }
+
+    function renderComplaints() {
+      // Update Stats
+      document.getElementById('statTotal').textContent = complaints.length;
+      document.getElementById('statPending').textContent = complaints.filter(c => c.status === 'Pending').length;
+      document.getElementById('statResponding').textContent = complaints.filter(c => c.status === 'Responding').length;
+      document.getElementById('statSolved').textContent = complaints.filter(c => c.status === 'Solved').length;
+
+      const listEl = document.getElementById('complaintList');
+      const filtered = complaints.filter(c => currentFilter === 'All' || c.status === currentFilter);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<p style="color: var(--muted); text-align:center; padding: 24px;">No complaints found under "${currentFilter}".</p>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(cmp => {
+        const statusClass = cmp.status.toLowerCase();
+        const urgencyClass = 'urgency-' + cmp.urgency.toLowerCase();
+
+        const statusLabel =
+          cmp.status === 'Pending' ? 'Pending — Awaiting Police' :
+          cmp.status === 'Responding' ? 'Police Responding' :
+          'Solved';
+
+        const policeLogHTML = cmp.policeNote
+          ? `<div class="police-log"><strong>Police Update (${cmp.updatedAt}):</strong> ${cmp.policeNote}</div>`
+          : '';
+
+        const policeControlsHTML = currentRole === 'police' && cmp.status !== 'Solved'
+          ? `
+            <div class="police-actions">
+              <input type="text" id="note-${cmp.id}" placeholder="Optional police action / resolution note..." />
+              ${cmp.status === 'Pending' ? `<button class="btn btn-respond" onclick="updateStatus('${cmp.id}', 'Responding')">Dispatch / Respond Now</button>` : ''}
+              <button class="btn btn-solve" onclick="updateStatus('${cmp.id}', 'Solved')">Mark as Solved</button>
+            </div>
+          `
+          : '';
+
+        return `
+          <div class="complaint-item status-${statusClass}">
+            <div class="complaint-top">
+              <span class="cmp-id">${cmp.id}</span>
+              <div class="badges">
+                <span class="${urgencyClass}">● ${cmp.urgency} Priority</span>
+                <span class="badge badge-${statusClass}">${statusLabel}</span>
+              </div>
+            </div>
+            <div class="complaint-title">${cmp.category} — ${cmp.location}</div>
+            <div class="complaint-meta">Reported by <strong>${cmp.reporterName}</strong> (${cmp.phone}) • ${cmp.createdAt}</div>
+            <div class="complaint-desc">${cmp.description}</div>
+            ${policeLogHTML}
+            ${policeControlsHTML}
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderComplaints();
+  </script>
+</body>
+</html>
